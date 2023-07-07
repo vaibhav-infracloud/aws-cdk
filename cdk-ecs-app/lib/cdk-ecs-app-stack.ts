@@ -4,7 +4,12 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
+// Some configurable parameters
 const image_name = "public.ecr.aws/docker/library/httpd:latest"
+const container_port = 80
+const alb_listener_port = 80
+const memory = '512' // in Mb
+const cpu = '256' 
 
 export class CdkEcsAppStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -24,15 +29,15 @@ export class CdkEcsAppStack extends Stack {
         // Create a task definition
     const taskDefinition = new ecs.TaskDefinition(this, 'CDKTaskDefinition', {
       compatibility: ecs.Compatibility.FARGATE,
-      memoryMiB: '512',
-      cpu: '256',
+      memoryMiB: memory,
+      cpu: cpu,
     });
 
     // Add container(s) to the task definition
-    taskDefinition.addContainer('CDKNginxContainer', {
+    taskDefinition.addContainer('CDKContainer', {
       image: ecs.ContainerImage.fromRegistry(image_name),
-      memoryLimitMiB: 512,
-      portMappings: [{ containerPort: 80 }],
+      memoryLimitMiB: parseInt(memory, 10),
+      portMappings: [{ containerPort: container_port }],
     });
 
     // Create a service
@@ -49,13 +54,13 @@ export class CdkEcsAppStack extends Stack {
 
     // Create a listener for the ALB
     const listener = alb.addListener('CDKListener', {
-      port: 80,
+      port: alb_listener_port,
       open: true,
     });
 
     // Attach the ECS service as a target to the ALB listener
     listener.addTargets('ECS', {
-      port: 80,
+      port: container_port,
       targets: [service],
     });
 
