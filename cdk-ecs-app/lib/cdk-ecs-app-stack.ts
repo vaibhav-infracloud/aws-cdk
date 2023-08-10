@@ -44,10 +44,9 @@ export class CdkEcsAppStack extends Stack {
       internetFacing: true,
     });
 
-    // Create a task definition
-        // Create a task definition
     services.forEach((service, index ) => {
 
+        // Create a task definition
         const taskDefinition = new ecs.TaskDefinition(this,'CDKTaskDefinition_'+index, {
           compatibility: ecs.Compatibility.FARGATE,
           memoryMiB: service.memory,
@@ -79,12 +78,10 @@ export class CdkEcsAppStack extends Stack {
         listener.addTargets('ECS', {
           port: service.container_port,
           targets: [ecsService],
-        });
-
-        // Output the ALB DNS name
-        
+        });       
     });
 
+    // Output the ALB DNS name
     new CfnOutput(this, 'ALBDNS', {
       value: alb.loadBalancerDnsName,
       description: 'ALB DNS name for service',
