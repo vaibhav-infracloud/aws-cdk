@@ -3,26 +3,9 @@ import { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-
+import * as variables from "../cdk-ecs-app-config"
 // Some configurable parameters
-const services = [
-  {
-  image_name : "public.ecr.aws/docker/library/httpd:latest",
-  container_port : 80,
-  alb_listener_port : 8081,
-  desired_count : 2,
-  memory : '512', // in Mb
-  cpu : '256'
- },
- {
-   image_name : "nginx:latest",
-   container_port : 80,
-   alb_listener_port : 8080,
-   desired_count : 2,
-   memory : '512', // in Mb
-   cpu : '256'
- }
-];
+
 
 export class CdkEcsAppStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -44,7 +27,7 @@ export class CdkEcsAppStack extends Stack {
       internetFacing: true,
     });
 
-    services.forEach((service, index ) => {
+    variables.services.forEach((service, index ) => {
 
         // Create a task definition
         const taskDefinition = new ecs.TaskDefinition(this,'CDKTaskDefinition_'+index, {
