@@ -23,7 +23,20 @@ Before proceeding with the installation and setup, ensure you have the following
     ```sh
     npm install
     ```
-    
+## Variable Configuration
+
+Set the appropriate values for the services to be deployed on ECS in file **cdk-ecs-app-config.ts**.
+Below is an example for the same:
+```
+{
+  image_name : "public.ecr.aws/docker/library/httpd:latest",
+  container_port : 80,
+  alb_listener_port : 8081,
+  desired_count : 2,
+  memory : '512', // in Mb
+  cpu : '256'
+ }
+```
 ## Deployment
 
 To deploy the required docker application on AWS ECS run the below commands:
